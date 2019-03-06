@@ -15,6 +15,10 @@ import io.git.zjoker.zcache.core.ICacheCore;
  */
 
 public interface ICacheHelper extends ICacheCore {
+    /**
+     * Illegal Duration
+     * It means cached without duration.
+     * */
     long C_Illegal_Duration = -1;
 
     /**

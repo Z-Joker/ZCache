@@ -7,16 +7,11 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 
-import base.cache.CacheConfigManager;
-import base.cache.core.ICacheCore;
-import base.cache.mapper.BytesMapper;
-import base.cache.mapper.IByteMapper;
-import base.functional.Optional;
 import io.git.zjoker.zcache.CacheConfigManager;
 import io.git.zjoker.zcache.Optional;
 import io.git.zjoker.zcache.core.ICacheCore;
 import io.git.zjoker.zcache.mapper.BytesMapper;
-import io.git.zjoker.zcache.mapper.IByteMapper;
+import io.git.zjoker.zcache.mapper.IByteConverter;
 
 public class SingleCacheHelper implements ICacheHelper {
     private ICacheCore cacheCore;
@@ -27,62 +22,62 @@ public class SingleCacheHelper implements ICacheHelper {
 
     @Override
     public void putBytes(String key, byte[] bytes) {
-        putByteMapper(key, bytes, new BytesMapper());
+        put(key, bytes, new BytesMapper());
     }
 
     @Override
     public byte[] getBytes(String key) {
-        return getByteMapper(key, new BytesMapper());
+        return get(key, new BytesMapper());
     }
 
     @Override
     public void putBitmap(String key, Bitmap bitmap) {
-        putByteMapper(key, bitmap, CacheConfigManager.instance().getMapper(Bitmap.class));
+        put(key, bitmap, CacheConfigManager.instance().getMapper(Bitmap.class));
     }
 
     @Override
     public Bitmap getBitmap(String key) {
-        return getByteMapper(key, CacheConfigManager.instance().getMapper(Bitmap.class));
+        return get(key, CacheConfigManager.instance().getMapper(Bitmap.class));
     }
 
     @Override
     public <T extends Serializable> void putSerializable(String key, T obj) {
-        putSerializable(key, obj, C_Illegal_Duration);
+        put(key, obj, CacheConfigManager.instance().getMapper(Serializable.class));
     }
 
     @Override
     public <T extends Serializable> void putSerializable(String key, T obj, long duration) {
-        putByteMapper(key, obj, duration, CacheConfigManager.instance().getMapper(Serializable.class));
+        put(key, obj, duration, CacheConfigManager.instance().getMapper(Serializable.class));
     }
 
     @Override
     public <T extends Serializable> T getSerializable(String key) {
-        return (T) getByteMapper(key, CacheConfigManager.instance().getMapper(Serializable.class));
+        return (T) get(key, CacheConfigManager.instance().getMapper(Serializable.class));
     }
 
     @Override
     public void putJSONObject(String key, JSONObject obj) {
-        putSerializable(key, obj.toString());
+        putString(key, obj.toString());
     }
 
     @Override
     public JSONObject getJSONObject(String key) throws JSONException {
-        return new JSONObject((String) getSerializable(key));
+        return new JSONObject(getString(key));
     }
 
     @Override
     public String getString(String key) {
-        return getByteMapper(key, CacheConfigManager.instance().getMapper(String.class));
+        return get(key, CacheConfigManager.instance().getMapper(String.class));
     }
 
     @Override
     public void putString(String key, String obj) {
-        putString(key, obj, C_Illegal_Duration);
+        put(key, obj, CacheConfigManager.instance().getMapper(String.class));
     }
 
     @Override
     public void putString(String key, String obj, long duration) {
-        putByteMapper(key, obj, duration, CacheConfigManager.instance().getMapper(String.class));
+        put(key, obj, duration, CacheConfigManager.instance().getMapper(String.class));
     }
 
     @Override
@@ -92,24 +87,24 @@ public class SingleCacheHelper implements ICacheHelper {
 
     @Override
     public <T> void putByteMapper(String key, T obj) {
-        putByteMapper(key, obj, CacheConfigManager.instance().getMapper((Class<T>) obj.getClass()));
+        put(key, obj, CacheConfigManager.instance().getMapper((Class<T>) obj.getClass()));
     }
 
     @Override
-    public <T> void putByteMapper(String key, T obj, IByteMapper<T> mapper) {
-        putByteMapper(key, obj, C_Illegal_Duration, mapper);
+    public <T> void put(String key, T obj, IByteConverter<T> mapper) {
+        put(key, obj, mapper);
     }
 
     @Override
-    public <T> void putByteMapper(String key, T obj, long age, IByteMapper<T> mapper) {
+    public <T> void put(String key, T obj, long duration, IByteConverter<T> converter) {
         Optional.checkNotNull(obj, "obj is null !!!");
-        Optional.checkNotNull(mapper, "mapper is null !!!");
-        cacheCore.putByteMapper(key, obj, age, mapper);
+        Optional.checkNotNull(converter, "mapper is null !!!");
+        cacheCore.put(key, obj, duration, converter);
     }
 
     @Override
-    public <T> T getByteMapper(String key, IByteMapper<T> mapper) {
-        return cacheCore.getByteMapper(key, mapper);
+    public <T> T get(String key, IByteConverter<T> converter) {
+        return cacheCore.get(key, converter);
     }
 
     @Override

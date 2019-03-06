@@ -15,7 +15,7 @@ import java.io.Serializable;
  */
 
 @SuppressLint("NewApi")
-public class SerializableByteMapper<T extends Serializable> implements IByteMapper<T> {
+public class SerializableByteMapper<T extends Serializable> implements IByteConverter<T> {
 
 
     public SerializableByteMapper() {

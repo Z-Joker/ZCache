@@ -66,6 +66,10 @@ public class CacheUtils {
         return -1;
     }
 
+    /**
+     * Fix duration.
+     * Return C_Illegal_Duration when duration is Illegal.
+     */
     public static long fixDuration(long duration) {
         return isLegalDuration(duration) ? duration : C_Illegal_Duration;
     }

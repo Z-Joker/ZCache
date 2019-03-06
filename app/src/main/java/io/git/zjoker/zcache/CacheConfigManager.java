@@ -8,7 +8,7 @@ import java.util.Map;
 
 import io.git.zjoker.zcache.mapper.BitmapByteMapper;
 import io.git.zjoker.zcache.mapper.BytesMapper;
-import io.git.zjoker.zcache.mapper.IByteMapper;
+import io.git.zjoker.zcache.mapper.IByteConverter;
 import io.git.zjoker.zcache.mapper.SerializableByteMapper;
 import io.git.zjoker.zcache.mapper.StringByteMapper;
 
@@ -19,7 +19,7 @@ public class CacheConfigManager {
     public int _diskCacheSize;
     public int _appVersion;
     public String _diskCacheRootPath;
-    public Map<Class, IByteMapper> mappers;
+    public Map<Class, IByteConverter> mappers;
 
     private CacheConfigManager() {
         mappers = new HashMap<>();
@@ -66,11 +66,11 @@ public class CacheConfigManager {
         return this;
     }
 
-    public <T> IByteMapper<T> getMapper(Class<T> cacheClass) {
+    public <T> IByteConverter<T> getMapper(Class<T> cacheClass) {
         return mappers.get(cacheClass);
     }
 
-    public <T> CacheConfigManager registerMappers(Class<T> cacheClass, IByteMapper<T> mapper) {
+    public <T> CacheConfigManager registerMappers(Class<T> cacheClass, IByteConverter<T> mapper) {
         mappers.put(cacheClass, mapper);
         return this;
     }

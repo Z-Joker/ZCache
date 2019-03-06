@@ -4,7 +4,7 @@ package io.git.zjoker.zcache.mapper;
  * Created by borney on 3/8/17.
  */
 
-public class BytesMapper implements IByteMapper<byte[]> {
+public class BytesMapper implements IByteConverter<byte[]> {
 
     public BytesMapper() {
 

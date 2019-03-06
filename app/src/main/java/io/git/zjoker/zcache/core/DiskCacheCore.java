@@ -5,8 +5,7 @@ import java.io.IOException;
 import io.git.zjoker.zcache.CacheUtils;
 import io.git.zjoker.zcache.Utils;
 import io.git.zjoker.zcache.disklrucache.DiskLruCacheHelper;
-import io.git.zjoker.zcache.helper.ICacheHelper;
-import io.git.zjoker.zcache.mapper.IByteMapper;
+import io.git.zjoker.zcache.mapper.IByteConverter;
 
 import static io.git.zjoker.zcache.helper.ICacheHelper.C_Illegal_Duration;
 
@@ -25,13 +24,13 @@ public class DiskCacheCore implements ICacheCore {
     }
 
     @Override
-    public <T> void putByteMapper(String key, T obj, IByteMapper<T> mapper) {
-        putByteMapper(key, obj, C_Illegal_Duration, mapper);
+    public <T> void put(String key, T obj, IByteConverter<T> mapper) {
+        put(key, obj, C_Illegal_Duration, mapper);
     }
 
     @Override
-    public <T> void putByteMapper(String key, T obj, long duration, IByteMapper<T> mapper) {
-        byte[] bytes = mapper.getBytes(obj);
+    public <T> void put(String key, T obj, long duration, IByteConverter<T> converter) {
+        byte[] bytes = converter.getBytes(obj);
         if (!CacheUtils.isLegalDuration(duration)) {
             diskLruCacheHelper.put(key, bytes);
         } else {
@@ -40,7 +39,7 @@ public class DiskCacheCore implements ICacheCore {
     }
 
     @Override
-    public <T> T getByteMapper(String key, IByteMapper<T> mapper) {
+    public <T> T get(String key, IByteConverter<T> converter) {
         byte[] bytes = diskLruCacheHelper.getAsByte(key);
         if (bytes == null) {
             return null;
@@ -50,7 +49,7 @@ public class DiskCacheCore implements ICacheCore {
             return null;
         }
 
-        return mapper.getObject(CacheUtils.clearDateInfo(bytes));
+        return converter.getObject(CacheUtils.clearDateInfo(bytes));
     }
 
     @Override

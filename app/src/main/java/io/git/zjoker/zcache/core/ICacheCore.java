@@ -1,6 +1,8 @@
 package io.git.zjoker.zcache.core;
 
-import io.git.zjoker.zcache.mapper.IByteMapper;
+import android.support.annotation.Size;
+
+import io.git.zjoker.zcache.mapper.IByteConverter;
 
 /**
  * Created by borney on 3/7/17.
@@ -8,45 +10,46 @@ import io.git.zjoker.zcache.mapper.IByteMapper;
 
 public interface ICacheCore {
     /**
-     * putByteMapper a object to cache
+     * put a object to cache
      *
-     * @param key    The relative name of the storage object file can be a directory tree
-     * @param mapper Store the object of the converter
+     * @param key    The key of the obj in cache.
      * @param <T>    The object to be stored
+     * @param converter the converter convert obj -> byte[]
      */
-    <T> void putByteMapper(String key, T obj, IByteMapper<T> mapper);
+    <T> void put(String key, T obj, IByteConverter<T> converter);
 
     /**
-     * putByteMapper a object to cache
+     * put a object to cache with duration
      *
-     * @param key    The relative name of the storage object file can be a directory tree
+     * @param key    The key of the obj in cache.
      * @param <T>    The object to be stored
-     * @param mapper Store the object of the converter
+     * @param duration The duration of this cache.
+     * @param converter the converter convert obj -> byte[]
      */
-    <T> void putByteMapper(String key, T obj, long age, IByteMapper<T> mapper);
+    <T> void put(String key, T obj, long duration, IByteConverter<T> converter);
 
 
     /**
      * get a object from cache
      *
-     * @param key The relative name of the storage object file can be a directory tree
-     * @param <T> Store the object of the converter
-     * @return Stored object
+     * @param key The key of the obj in cache.
+     * @param <T> the converter convert byte[] -> obj
+     * @return Stored object. return null if no cache or expired.
      */
-    <T> T getByteMapper(String key, IByteMapper<T> mapper);
+    <T> T get(String key, IByteConverter<T> converter);
 
     /**
-     * cache data is expired or not by key
+     * Return cache data is expired or not by key
      *
-     * @param key The relative name of the storage object file can be a directory tree
+     * @param key The key of the obj in cache.
      */
     boolean isExpired(String key);
 
 
     /**
-     * Clear the cache corresponding to key
+     * Clear the cache by key
      *
-     * @param key The relative name of the storage object file can be a directory tree
+     * @param key The key of the obj in cache.
      */
     void evict(String key);
 
@@ -56,12 +59,18 @@ public interface ICacheCore {
     void evictAll();
 
     /**
-     * Whether the cache corresponding to the data
+     * Return whether cached this key
      *
      * @param key
-     * @return
      */
     boolean isCached(String key);
 
-    long[] getDurationInfo(String key);
+    /**
+     * Get the duration info info by key.
+     * return null if not cached this key or without duration info.
+     *
+     * @param key The key of the obj in cache.
+     * @return long[0] = storageTime, long[1] = duration
+     */
+    @Size(2) long[] getDurationInfo(String key);
 }

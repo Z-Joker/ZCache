@@ -5,15 +5,18 @@ import android.util.LruCache;
 import java.io.Serializable;
 
 import io.git.zjoker.zcache.CacheUtils;
-import io.git.zjoker.zcache.mapper.IByteMapper;
+import io.git.zjoker.zcache.mapper.IByteConverter;
 
 import static io.git.zjoker.zcache.helper.ICacheHelper.C_Illegal_Duration;
+/**
+ * Memory Cache used LruCache.
+ * */
 
 public class MemoryCacheCore implements ICacheCore {
-    private LruCache<String, CacheEntry> bytesMap;
+    private LruCache<String, CacheEntry> cacheMap;
 
     public MemoryCacheCore(int maxSize) {
-        bytesMap = new LruCache<String, CacheEntry>(maxSize) {
+        cacheMap = new LruCache<String, CacheEntry>(maxSize) {
             @Override
             protected int sizeOf(String key, CacheEntry value) {
                 return value.bytes.length;
@@ -22,79 +25,78 @@ public class MemoryCacheCore implements ICacheCore {
     }
 
     @Override
-    public <T> void putByteMapper(String key, T obj, IByteMapper<T> mapper) {
-        putByteMapper(key, obj, C_Illegal_Duration, mapper);
+    public <T> void put(String key, T obj, IByteConverter<T> converter) {
+        put(key, obj, C_Illegal_Duration, converter);
     }
 
     @Override
-    public <T> void putByteMapper(String key, T obj, long duration, IByteMapper<T> mapper) {
-        bytesMap.put(key, new CacheEntry(mapper.getBytes(obj), CacheUtils.fixDuration(duration)));
+    public <T> void put(String key, T obj, long duration, IByteConverter<T> converter) {
+        cacheMap.put(key, new CacheEntry(converter.getBytes(obj), CacheUtils.fixDuration(duration)));
     }
 
-    public <T> void putByteMapper(String key, T obj, long saveTime, long duration, IByteMapper<T> mapper) {
-        bytesMap.put(key, new CacheEntry(mapper.getBytes(obj), saveTime, CacheUtils.fixDuration(duration)));
+    public <T> void put(String key, T obj, long saveTime, long duration, IByteConverter<T> mapper) {
+        cacheMap.put(key, new CacheEntry(mapper.getBytes(obj), saveTime, CacheUtils.fixDuration(duration)));
     }
 
     @Override
-    public <T> T getByteMapper(String key, IByteMapper<T> mapper) {
-        CacheEntry cacheEntry = bytesMap.get(key);
+    public <T> T get(String key, IByteConverter<T> converter) {
+        CacheEntry cacheEntry = cacheMap.get(key);
         if (cacheEntry == null) {
             return null;
         }
-        if (CacheUtils.isExpired(cacheEntry.saveTime, cacheEntry.duration)) {
+        if (CacheUtils.isExpired(cacheEntry.storageTime, cacheEntry.duration)) {
             evict(key);
             return null;
         }
-        return mapper.getObject(cacheEntry.bytes);
+        return converter.getObject(cacheEntry.bytes);
     }
 
     @Override
     public boolean isExpired(String key) {
-        CacheEntry cacheEntry = bytesMap.get(key);
-        return cacheEntry != null && CacheUtils.isExpired(cacheEntry.saveTime, cacheEntry.duration);
+        CacheEntry cacheEntry = cacheMap.get(key);
+        return cacheEntry != null && CacheUtils.isExpired(cacheEntry.storageTime, cacheEntry.duration);
     }
-
 
     @Override
     public void evict(String key) {
-        if (bytesMap.get(key) != null) {
-            bytesMap.remove(key);
+        if (cacheMap.get(key) != null) {
+            cacheMap.remove(key);
         }
     }
 
     @Override
     public void evictAll() {
-        bytesMap.evictAll();
+        cacheMap.evictAll();
     }
 
     @Override
     public boolean isCached(String key) {
-        return bytesMap.get(key) != null;
+        return cacheMap.get(key) != null;
     }
 
     @Override
     public long[] getDurationInfo(String key) {
-        CacheEntry cacheEntry = bytesMap.get(key);
+        CacheEntry cacheEntry = cacheMap.get(key);
         if (cacheEntry == null) {
             return null;
         }
-        return new long[]{cacheEntry.saveTime, cacheEntry.duration};
+        return new long[]{cacheEntry.storageTime, cacheEntry.duration};
     }
 
     private static class CacheEntry implements Serializable {
         byte[] bytes;
-        long saveTime;
+        long storageTime;
         long duration;
 
         public CacheEntry(byte[] bytes, long duration) {
             this.bytes = bytes;
-            this.saveTime = System.currentTimeMillis();
+            this.storageTime = System.currentTimeMillis();
             this.duration = duration;
         }
 
-        public CacheEntry(byte[] bytes, long saveTime, long duration) {
+        public CacheEntry(byte[] bytes, long storageTime, long duration) {
             this.bytes = bytes;
-            this.saveTime = saveTime;
+            this.storageTime = storageTime;
             this.duration = duration;
         }
     }

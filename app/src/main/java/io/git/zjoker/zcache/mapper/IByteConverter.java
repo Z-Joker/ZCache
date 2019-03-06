@@ -6,7 +6,7 @@ package io.git.zjoker.zcache.mapper;
  * <p>
  */
 
-public interface IByteMapper<T> {
+public interface IByteConverter<T> {
     /**
      * The byte array of objects
      *
