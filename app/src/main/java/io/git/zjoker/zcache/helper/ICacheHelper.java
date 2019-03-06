@@ -8,109 +8,173 @@ import org.json.JSONObject;
 import java.io.Serializable;
 
 import io.git.zjoker.zcache.core.ICacheCore;
+import io.git.zjoker.zcache.converter.IByteConverter;
 
-/**
- * @author borney
- * @date 3/1/17
- */
-
-public interface ICacheHelper extends ICacheCore {
-    /**
-     * Illegal Duration
-     * It means cached without duration.
-     * */
-    long C_Illegal_Duration = -1;
+public interface ICacheHelper<V extends ICacheCore> extends ICacheCore {
 
     /**
-     * putByteMapper a object to cache
+     * Cache a obj.
      *
-     * @param key The relative name of the storage object file can be a directory tree
-     * @param <T> The object to be stored
+     * @param key       The key of the obj in cache.
+     * @param <T>       The object will be cached
+     * @param converter the converter convert obj -> byte[]
      */
-    <T> void putByteMapper(String key, T obj);
+    <T> void put(String key, T obj, IByteConverter<T> converter);
+
 
     /**
-     * cache byte array
+     * Cache a obj. Need register a Converter fot this obj's Class first.
      *
-     * @param key
-     * @param bytes
+     * @param key The key of the obj in cache.
+     * @param obj The object to be stored
+     */
+    <T> void put(String key, T obj);
+
+    /*********************************Byte[]*****************************************/
+
+    /**
+     * cache a byte array with duration.
+     *
+     * @param key      The key of the obj in cache.
+     * @param bytes    The bytes will be cached.
+     * @param duration The duration of this cache.
+     */
+    void putBytes(String key, byte[] bytes, long duration);
+
+    /**
+     * Cache a byte array.
+     *
+     * @param key   The key of the obj in cache.
+     * @param bytes The bytes to be stored.
      */
     void putBytes(String key, byte[] bytes);
 
     /**
-     * get byte array from cache
+     * Get a byte array cache
      *
-     * @param key
-     * @return
+     * @param key The key of the obj in cache.
+     * @return Cached byte array. return null if no cache or expired.
      */
     byte[] getBytes(String key);
 
+
+    /*********************************Bitmap*****************************************/
+
     /**
-     * cache bitmap
+     * Cache a bitmap with duration.
      *
-     * @param key
-     * @param bitmap
+     * @param key      The key of the obj in cache.
+     * @param bitmap   The bitmap will be cached.
+     * @param duration The duration of this cache.
+     */
+    void putBitmap(String key, Bitmap bitmap, long duration);
+
+
+    /**
+     * Cache a bitmap.
+     *
+     * @param key    The key of the obj in cache.
+     * @param bitmap The bitmap will be cached.
      */
     void putBitmap(String key, Bitmap bitmap);
 
+
     /**
-     * get bitmap from cache
+     * Get bitmap from cache
      *
-     * @param key
-     * @return
+     * @param key The key of the obj in cache.
+     * @return Cached Bitmap. return null if no cache or expired.
      */
     Bitmap getBitmap(String key);
 
-    /**
-     * cache Serializable object
-     *
-     * @param key
-     * @param obj which extends Serializable {@link Serializable}
-     * @param <T>
-     */
-    <T extends Serializable> void putSerializable(String key, T obj);
+    /*********************************Serializable*****************************************/
 
     /**
-     * cache Serializable object
+     * Cache a serializable object with duration.
      *
-     * @param key
-     * @param obj      which extends Serializable {@link Serializable}
-     * @param <T>
-     * @param duration cache duration
+     * @param key      The key of the obj in cache.
+     * @param obj      The serializable object will be cached.
+     * @param duration The duration of this cache.
      */
-    <T extends Serializable> void putSerializable(String key, T obj, long duration);
+    void putSerializable(String key, Serializable obj, long duration);
 
     /**
-     * get Serializable object from cache
+     * Cache a serializable object.
      *
-     * @param key
-     * @param <T>
-     * @return
+     * @param key The key of the obj in cache.
+     * @param obj The serializable object will be cached.
      */
-    <T extends Serializable> T getSerializable(String key);
+    void putSerializable(String key, Serializable obj);
+
 
     /**
-     * cache JSONObject
+     * Get a serializable obj from cache
      *
-     * @param key
-     * @param obj
+     * @param key The key of the obj in cache.
+     * @return Cached serializable obj. return null if no cache or expired.
+     */
+    Serializable getSerializable(String key);
+
+    /*****************************JSONObject****************************/
+
+
+    /**
+     * Cache a JSONObject with duration.
+     *
+     * @param key      The key of the obj in cache.
+     * @param obj      The JSONObject will be cached.
+     * @param duration The duration of this cache.
+     */
+    void putJSONObject(String key, JSONObject obj, long duration);
+
+
+    /**
+     * Cache a JSONObject.
+     *
+     * @param key The key of the obj in cache.
+     * @param obj The JSONObject will be cached.
      */
     void putJSONObject(String key, JSONObject obj);
 
+
     /**
-     * get JSONObject from cache
+     * Get a JSONObject from cache
      *
-     * @param key
-     * @return
+     * @param key The key of the obj in cache.
+     * @return Cached JSONObject. return null if no cache or expired.
      * @throws JSONException
      */
     JSONObject getJSONObject(String key) throws JSONException;
 
-    String getString(String key);
+    /*****************************String****************************/
 
-    void putString(String key, String obj);
-
+    /**
+     * Cache a String with duration.
+     *
+     * @param key      The key of the obj in cache.
+     * @param obj      The String will be cached.
+     * @param duration The duration of this cache.
+     */
     void putString(String key, String obj, long duration);
 
-    ICacheCore getCacheCore();
+    /**
+     * Cache a String with duration.
+     *
+     * @param key The key of the obj in cache.
+     * @param obj The String will be cached.
+     */
+    void putString(String key, String obj);
+
+    /**
+     * Get a String from cache.
+     *
+     * @param key The key of the obj in cache.
+     * @return Cached String. return null if no cache or expired.
+     */
+    String getString(String key);
+
+    /**
+     * Get the core of this Helper;
+     */
+    V getCacheCore();
 }

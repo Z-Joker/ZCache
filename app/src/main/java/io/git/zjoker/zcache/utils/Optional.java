@@ -1,8 +1,5 @@
-package io.git.zjoker.zcache;
+package io.git.zjoker.zcache.utils;
 
-/**
- * Created by borney on 3/9/17.
- */
 
 public final class Optional {
 

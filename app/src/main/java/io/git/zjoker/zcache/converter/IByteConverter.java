@@ -1,4 +1,4 @@
-package io.git.zjoker.zcache.mapper;
+package io.git.zjoker.zcache.converter;
 
 /**
  * IByteMapper is a object convert to byte array or byte array to object mapper, It is used to
@@ -13,7 +13,7 @@ public interface IByteConverter<T> {
      * @param obj
      * @return
      */
-    byte[] getBytes(T obj);
+    byte[] obj2Bytes(T obj);
 
     /**
      * The byte array is converted to an object
@@ -21,5 +21,5 @@ public interface IByteConverter<T> {
      * @param bytes
      * @return
      */
-    T getObject(byte[] bytes);
+    T bytes2Obj(byte[] bytes);
 }

@@ -4,13 +4,12 @@ import android.util.LruCache;
 
 import java.io.Serializable;
 
-import io.git.zjoker.zcache.CacheUtils;
-import io.git.zjoker.zcache.mapper.IByteConverter;
+import io.git.zjoker.zcache.utils.CacheUtil;
+import io.git.zjoker.zcache.converter.IByteConverter;
 
-import static io.git.zjoker.zcache.helper.ICacheHelper.C_Illegal_Duration;
 /**
- * Memory Cache used LruCache.
- * */
+ * Memory Cache supported by LruCache.
+ */
 
 public class MemoryCacheCore implements ICacheCore {
     private LruCache<String, CacheEntry> cacheMap;
@@ -25,43 +24,41 @@ public class MemoryCacheCore implements ICacheCore {
     }
 
     @Override
-    public <T> void put(String key, T obj, IByteConverter<T> converter) {
-        put(key, obj, C_Illegal_Duration, converter);
+    public <T> void put(String key, T obj, long duration, IByteConverter<T> converter) {
+        putWithDeadLine(key, obj, System.currentTimeMillis() + duration, converter);
     }
 
     @Override
-    public <T> void put(String key, T obj, long duration, IByteConverter<T> converter) {
-        cacheMap.put(key, new CacheEntry(converter.getBytes(obj), CacheUtils.fixDuration(duration)));
-    }
-
-    public <T> void put(String key, T obj, long saveTime, long duration, IByteConverter<T> mapper) {
-        cacheMap.put(key, new CacheEntry(mapper.getBytes(obj), saveTime, CacheUtils.fixDuration(duration)));
+    public <T> void putWithDeadLine(String key, T obj, long deadLine, IByteConverter<T> converter) {
+        CacheUtil.validateKey(key);
+        cacheMap.put(key, new CacheEntry(converter.obj2Bytes(obj), System.currentTimeMillis() + deadLine));
     }
 
     @Override
     public <T> T get(String key, IByteConverter<T> converter) {
+        CacheUtil.validateKey(key);
         CacheEntry cacheEntry = cacheMap.get(key);
         if (cacheEntry == null) {
             return null;
         }
-        if (CacheUtils.isExpired(cacheEntry.storageTime, cacheEntry.duration)) {
+        if (CacheUtil.isExpired(cacheEntry.deadLine)) {
             evict(key);
             return null;
         }
-        return converter.getObject(cacheEntry.bytes);
+        return converter.bytes2Obj(cacheEntry.bytes);
     }
 
     @Override
     public boolean isExpired(String key) {
+        CacheUtil.validateKey(key);
         CacheEntry cacheEntry = cacheMap.get(key);
-        return cacheEntry != null && CacheUtils.isExpired(cacheEntry.storageTime, cacheEntry.duration);
+        return cacheEntry != null && CacheUtil.isExpired(cacheEntry.deadLine);
     }
 
     @Override
     public void evict(String key) {
-        if (cacheMap.get(key) != null) {
-            cacheMap.remove(key);
-        }
+        CacheUtil.validateKey(key);
+        cacheMap.remove(key);
     }
 
     @Override
@@ -71,33 +68,27 @@ public class MemoryCacheCore implements ICacheCore {
 
     @Override
     public boolean isCached(String key) {
+        CacheUtil.validateKey(key);
         return cacheMap.get(key) != null;
     }
 
     @Override
-    public long[] getDurationInfo(String key) {
+    public long getDeadLine(String key) {
+        CacheUtil.validateKey(key);
         CacheEntry cacheEntry = cacheMap.get(key);
         if (cacheEntry == null) {
-            return null;
+            return 0;
         }
-        return new long[]{cacheEntry.storageTime, cacheEntry.duration};
+        return cacheEntry.deadLine;
     }
 
     private static class CacheEntry implements Serializable {
         byte[] bytes;
-        long storageTime;
-        long duration;
+        long deadLine;
 
-        public CacheEntry(byte[] bytes, long duration) {
+        public CacheEntry(byte[] bytes, long deadLine) {
             this.bytes = bytes;
-            this.storageTime = System.currentTimeMillis();
-            this.duration = duration;
-        }
-
-        public CacheEntry(byte[] bytes, long storageTime, long duration) {
-            this.bytes = bytes;
-            this.storageTime = storageTime;
-            this.duration = duration;
+            this.deadLine = deadLine;
         }
     }
 }

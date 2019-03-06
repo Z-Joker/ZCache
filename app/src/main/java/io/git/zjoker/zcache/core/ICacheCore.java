@@ -2,21 +2,16 @@ package io.git.zjoker.zcache.core;
 
 import android.support.annotation.Size;
 
-import io.git.zjoker.zcache.mapper.IByteConverter;
+import io.git.zjoker.zcache.converter.IByteConverter;
 
-/**
- * Created by borney on 3/7/17.
- */
+
 
 public interface ICacheCore {
     /**
-     * put a object to cache
-     *
-     * @param key    The key of the obj in cache.
-     * @param <T>    The object to be stored
-     * @param converter the converter convert obj -> byte[]
+     * Illegal Duration
+     * It means cached without duration.
      */
-    <T> void put(String key, T obj, IByteConverter<T> converter);
+    long C_Illegal_Duration = 0;
 
     /**
      * put a object to cache with duration
@@ -28,6 +23,15 @@ public interface ICacheCore {
      */
     <T> void put(String key, T obj, long duration, IByteConverter<T> converter);
 
+    /**
+     * put a object to cache with duration
+     *
+     * @param key    The key of the obj in cache.
+     * @param <T>    The object to be stored
+     * @param deadLine The deadLine of this cache.
+     * @param converter the converter convert obj -> byte[]
+     */
+    <T> void putWithDeadLine(String key, T obj, long deadLine, IByteConverter<T> converter);
 
     /**
      * get a object from cache
@@ -72,5 +76,5 @@ public interface ICacheCore {
      * @param key The key of the obj in cache.
      * @return long[0] = storageTime, long[1] = duration
      */
-    @Size(2) long[] getDurationInfo(String key);
+    @Size(2) long getDeadLine(String key);
 }

@@ -2,87 +2,85 @@ package io.git.zjoker.zcache.core;
 
 import java.io.IOException;
 
-import io.git.zjoker.zcache.CacheUtils;
-import io.git.zjoker.zcache.Utils;
-import io.git.zjoker.zcache.disklrucache.DiskLruCacheHelper;
-import io.git.zjoker.zcache.mapper.IByteConverter;
+import io.git.zjoker.zcache.utils.CacheUtil;
+import io.git.zjoker.zcache.utils.DiskLruCacheUtil;
+import io.git.zjoker.zcache.converter.IByteConverter;
 
-import static io.git.zjoker.zcache.helper.ICacheHelper.C_Illegal_Duration;
+/**
+ * Disk cache Cache supported by DiskLruCache.
+ */
 
 public class DiskCacheCore implements ICacheCore {
-    private DiskLruCacheHelper diskLruCacheHelper;
+    private DiskLruCacheUtil diskLruCacheUtil;
 
     public DiskCacheCore(int appVersion, String cacheDir, int maxSize) {
         if (maxSize <= 0) {
             throw new IllegalArgumentException("maxSpace must > 0");
         }
         try {
-            diskLruCacheHelper = new DiskLruCacheHelper(appVersion, cacheDir, maxSize);
+            diskLruCacheUtil = new DiskLruCacheUtil(appVersion, cacheDir, maxSize);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public <T> void put(String key, T obj, IByteConverter<T> mapper) {
-        put(key, obj, C_Illegal_Duration, mapper);
+    public <T> void put(String key, T obj, long duration, IByteConverter<T> converter) {
+        putWithDeadLine(key, obj, System.currentTimeMillis() + duration, converter);
     }
 
     @Override
-    public <T> void put(String key, T obj, long duration, IByteConverter<T> converter) {
-        byte[] bytes = converter.getBytes(obj);
-        if (!CacheUtils.isLegalDuration(duration)) {
-            diskLruCacheHelper.put(key, bytes);
-        } else {
-            diskLruCacheHelper.put(key, CacheUtils.newByteArrayWithDateInfo(duration, bytes));
-        }
+    public <T> void putWithDeadLine(String key, T obj, long deadLine, IByteConverter<T> converter) {
+        CacheUtil.validateKey(key);
+        diskLruCacheUtil.put(key, CacheUtil.buildByteWithDeadLine(deadLine, converter.obj2Bytes(obj)));
     }
 
     @Override
     public <T> T get(String key, IByteConverter<T> converter) {
-        byte[] bytes = diskLruCacheHelper.getAsByte(key);
+        CacheUtil.validateKey(key);
+        byte[] bytes = diskLruCacheUtil.getAsByte(key);
         if (bytes == null) {
             return null;
         }
-        if (CacheUtils.isDue(bytes)) {
+        if (CacheUtil.isExpired(bytes)) {
             evict(key);
             return null;
         }
 
-        return converter.getObject(CacheUtils.clearDateInfo(bytes));
+        return converter.bytes2Obj(CacheUtil.clearDeadLineInfo(bytes));
     }
 
     @Override
     public boolean isExpired(String key) {
-        byte[] bytes = diskLruCacheHelper.getAsByte(key);
-        return bytes != null && CacheUtils.isDue(bytes);
+        CacheUtil.validateKey(key);
+        byte[] bytes = diskLruCacheUtil.getAsByte(key);
+        return bytes != null && CacheUtil.isExpired(bytes);
     }
 
     @Override
     public void evict(String key) {
-        diskLruCacheHelper.remove(key);
+        CacheUtil.validateKey(key);
+        diskLruCacheUtil.remove(key);
     }
 
     @Override
     public void evictAll() {
-        diskLruCacheHelper.clear();
+        diskLruCacheUtil.clear();
     }
 
     @Override
     public boolean isCached(String key) {
-        return diskLruCacheHelper.contains(key);
+        CacheUtil.validateKey(key);
+        return diskLruCacheUtil.contains(key);
     }
 
     @Override
-    public long[] getDurationInfo(String key) {
-        byte[] bytes = diskLruCacheHelper.getAsByte(key);
+    public long getDeadLine(String key) {
+        CacheUtil.validateKey(key);
+        byte[] bytes = diskLruCacheUtil.getAsByte(key);
         if (bytes == null) {
-            return null;
+            return 0;
         }
-        String[] info = CacheUtils.getDateInfoFromDate(bytes);
-        if (info != null && info.length == 2) {
-            return new long[]{Utils.parseLong(info[0]), Utils.parseLong(info[1])};
-        }
-        return null;
+        return CacheUtil.parseLong(CacheUtil.getDeadLine(bytes));
     }
 }

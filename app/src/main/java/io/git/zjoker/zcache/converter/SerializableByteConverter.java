@@ -1,4 +1,4 @@
-package io.git.zjoker.zcache.mapper;
+package io.git.zjoker.zcache.converter;
 
 import android.annotation.SuppressLint;
 
@@ -10,19 +10,16 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-/**
- * Created by borney on 3/7/17.
- */
 
 @SuppressLint("NewApi")
-public class SerializableByteMapper<T extends Serializable> implements IByteConverter<T> {
+public class SerializableByteConverter implements IByteConverter<Serializable> {
 
 
-    public SerializableByteMapper() {
+    public SerializableByteConverter() {
     }
 
     @Override
-    public byte[] getBytes(Serializable obj) {
+    public byte[] obj2Bytes(Serializable obj) {
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
              ObjectOutput out = new ObjectOutputStream(bos)) {
             out.writeObject(obj);
@@ -34,10 +31,10 @@ public class SerializableByteMapper<T extends Serializable> implements IByteConv
     }
 
     @Override
-    public T getObject(byte[] bytes) {
+    public Serializable bytes2Obj(byte[] bytes) {
         try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
              ObjectInputStream ois = new ObjectInputStream(bis)) {
-            return (T) ois.readObject();
+            return (Serializable) ois.readObject();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
