@@ -5,15 +5,16 @@ import java.io.IOException;
 import io.git.zjoker.zcache.converter.IByteConverter;
 import io.git.zjoker.zcache.utils.CacheUtil;
 import io.git.zjoker.zcache.utils.DiskLruCacheUtil;
+import io.git.zjoker.zcache.utils.LogUtil;
 
 /**
  * Disk cache Cache supported by DiskLruCache.
  */
 
-public class DiskCacheCore implements ICacheCore {
+public class DiskCache implements ICache {
     private DiskLruCacheUtil diskLruCacheUtil;
 
-    public DiskCacheCore(int appVersion, String cacheDir, int maxSize) {
+    public DiskCache(int appVersion, String cacheDir, int maxSize) {
         if (maxSize <= 0) {
             throw new IllegalArgumentException("maxSpace must > 0");
         }
@@ -33,6 +34,7 @@ public class DiskCacheCore implements ICacheCore {
     public <T> void putWithDeadLine(String key, T obj, long deadLine, IByteConverter<T> converter) {
         CacheUtil.validateKey(key);
         diskLruCacheUtil.put(key, CacheUtil.buildByteWithDeadLine(deadLine, converter.obj2Bytes(obj)));
+        LogUtil.d(String.format("Put a cache into disk. Key=%s, Value=%s, DeadLine=%s", key, obj.toString(), deadLine));
     }
 
     @Override
@@ -43,10 +45,12 @@ public class DiskCacheCore implements ICacheCore {
             return null;
         }
         if (CacheUtil.isExpired(bytes)) {
-            evict(key);
+            LogUtil.d(String.format("Cache in disk of the key named %s expired", key));
+            remove(key);
             return null;
         }
 
+        LogUtil.d(String.format("Get a Cache from disk of the key named %s.", key));
         return converter.bytes2Obj(CacheUtil.clearDeadLineInfo(bytes));
     }
 
@@ -58,18 +62,18 @@ public class DiskCacheCore implements ICacheCore {
     }
 
     @Override
-    public void evict(String key) {
+    public void remove(String key) {
         CacheUtil.validateKey(key);
         diskLruCacheUtil.remove(key);
     }
 
     @Override
-    public void evictAll() {
+    public void removeAll() {
         diskLruCacheUtil.clear();
     }
 
     @Override
-    public boolean isCached(String key) {
+    public boolean contains(String key) {
         CacheUtil.validateKey(key);
         return diskLruCacheUtil.contains(key);
     }

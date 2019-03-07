@@ -8,9 +8,13 @@ import org.json.JSONObject;
 import java.io.Serializable;
 
 import io.git.zjoker.zcache.converter.IByteConverter;
-import io.git.zjoker.zcache.core.ICacheCore;
+import io.git.zjoker.zcache.core.ICache;
+/**
+ * A adapter of
+ *
+ * */
 
-public interface ICacheHelper<V extends ICacheCore> extends ICacheCore {
+public interface ICacheHelper<V extends ICache> extends ICache {
 
     /**
      * Cache a obj.
@@ -33,7 +37,7 @@ public interface ICacheHelper<V extends ICacheCore> extends ICacheCore {
     /*********************************Byte[]*****************************************/
 
     /**
-     * cache a byte array with duration.
+     * Cache a byte array with duration.
      *
      * @param key      The key of the obj in cache.
      * @param bytes    The bytes will be cached.
@@ -172,9 +176,4 @@ public interface ICacheHelper<V extends ICacheCore> extends ICacheCore {
      * @return Cached String. return null if no cache or expired.
      */
     String getString(String key);
-
-    /**
-     * Get the core of this Helper;
-     */
-    V getCacheCore();
 }

@@ -70,9 +70,8 @@ public class CacheUtil {
     }
 
 
-    private static String createDeadLineStr(long duration) {
-        String deadline = String.valueOf(System.currentTimeMillis() + duration);
-        return deadline + mSeparator;
+    private static String createDeadLineStr(long deadLine) {
+        return String.valueOf(deadLine) + mSeparator;
     }
 
     public static int getVersionCode(Context context) {

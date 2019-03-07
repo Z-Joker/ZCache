@@ -9,14 +9,18 @@ import java.io.Serializable;
 
 import io.git.zjoker.zcache.ZCacheConfig;
 import io.git.zjoker.zcache.converter.IByteConverter;
-import io.git.zjoker.zcache.core.ICacheCore;
-import io.git.zjoker.zcache.utils.Optional;
+import io.git.zjoker.zcache.core.DiskCache;
+import io.git.zjoker.zcache.core.ICache;
+import io.git.zjoker.zcache.core.MemoryCache;
 
-public class SingleLevelCacheHelper<V extends ICacheCore> implements ICacheHelper<V> {
-    private V cacheCore;
 
-    public SingleLevelCacheHelper(V ICache) {
-        this.cacheCore = ICache;
+public final class DoubleLevelCacheHelper implements ICacheHelper<ICache> {
+    private ICacheHelper<MemoryCache> memoryCacheHelper;
+    private ICacheHelper<DiskCache> diskCacheHelper;
+
+    public DoubleLevelCacheHelper(ICacheHelper<MemoryCache> memoryCacheHelper, ICacheHelper<DiskCache> diskCacheHelper) {
+        this.memoryCacheHelper = memoryCacheHelper;
+        this.diskCacheHelper = diskCacheHelper;
     }
 
     @Override
@@ -25,32 +29,42 @@ public class SingleLevelCacheHelper<V extends ICacheCore> implements ICacheHelpe
     }
 
     @Override
-    public <T> void put(String key, T obj, IByteConverter<T> mapper) {
-        put(key, obj, C_Illegal_Duration, mapper);
+    public <T> void put(String key, T obj, IByteConverter<T> converter) {
+        put(key, obj, C_Without_Duration, converter);
     }
 
     @Override
     public <T> void put(String key, T obj, long duration, IByteConverter<T> converter) {
-        Optional.checkNotNull(obj, "obj is null !!!");
-        Optional.checkNotNull(converter, "mapper is null !!!");
-        cacheCore.put(key, obj, duration, converter);
+        memoryCacheHelper.put(key, obj, duration, converter);
+        diskCacheHelper.put(key, obj, duration, converter);
     }
 
     @Override
     public <T> void putWithDeadLine(String key, T obj, long deadLine, IByteConverter<T> converter) {
-        Optional.checkNotNull(obj, "obj is null !!!");
-        Optional.checkNotNull(converter, "mapper is null !!!");
-        cacheCore.putWithDeadLine(key, obj, deadLine, converter);
+        memoryCacheHelper.putWithDeadLine(key, obj, deadLine, converter);
+        diskCacheHelper.putWithDeadLine(key, obj, deadLine, converter);
     }
 
     @Override
     public <T> T get(String key, IByteConverter<T> converter) {
-        return cacheCore.get(key, converter);
+        T obj = memoryCacheHelper.get(key, converter);
+        if (obj == null) {
+            obj = diskCacheHelper.get(key, converter);
+            if (obj != null) {
+                long deadLine = diskCacheHelper.getDeadLine(key);
+                if (deadLine > 0) {
+                    memoryCacheHelper.putWithDeadLine(key, obj, deadLine, converter);
+                } else {
+                    memoryCacheHelper.put(key, obj, C_Without_Duration, converter);
+                }
+            }
+        }
+        return obj;
     }
 
     @Override
     public void putBytes(String key, byte[] bytes) {
-        putBytes(key, bytes, C_Illegal_Duration);
+        putBytes(key, bytes, C_Without_Duration);
     }
 
     @Override
@@ -65,13 +79,14 @@ public class SingleLevelCacheHelper<V extends ICacheCore> implements ICacheHelpe
 
     @Override
     public void putBitmap(String key, Bitmap bitmap) {
-        putBitmap(key, bitmap, C_Illegal_Duration);
+        putBitmap(key, bitmap, C_Without_Duration);
     }
 
     @Override
     public void putBitmap(String key, Bitmap bitmap, long duration) {
         put(key, bitmap, duration, ZCacheConfig.instance().getConverter(Bitmap.class));
     }
+
 
     @Override
     public Bitmap getBitmap(String key) {
@@ -80,7 +95,7 @@ public class SingleLevelCacheHelper<V extends ICacheCore> implements ICacheHelpe
 
     @Override
     public void putSerializable(String key, Serializable obj) {
-        putSerializable(key, obj, C_Illegal_Duration);
+        putSerializable(key, obj, C_Without_Duration);
     }
 
     @Override
@@ -96,7 +111,7 @@ public class SingleLevelCacheHelper<V extends ICacheCore> implements ICacheHelpe
 
     @Override
     public void putJSONObject(String key, JSONObject obj) {
-        putJSONObject(key, obj, C_Illegal_Duration);
+        putJSONObject(key, obj, C_Without_Duration);
     }
 
     @Override
@@ -110,9 +125,10 @@ public class SingleLevelCacheHelper<V extends ICacheCore> implements ICacheHelpe
         return new JSONObject(getString(key));
     }
 
+
     @Override
     public void putString(String key, String obj) {
-        putString(key, obj, C_Illegal_Duration);
+        putString(key, obj, C_Without_Duration);
     }
 
     @Override
@@ -126,33 +142,36 @@ public class SingleLevelCacheHelper<V extends ICacheCore> implements ICacheHelpe
     }
 
     @Override
-    public V getCacheCore() {
-        return cacheCore;
-    }
-
-
-    @Override
     public boolean isExpired(String key) {
-        return cacheCore.isExpired(key);
+        if (memoryCacheHelper.contains(key)) {
+            return memoryCacheHelper.isExpired(key);
+        }
+        return diskCacheHelper.isExpired(key);
     }
 
     @Override
-    public synchronized void evict(String key) {
-        cacheCore.evict(key);
+    public synchronized void remove(String key) {
+        diskCacheHelper.remove(key);
+        memoryCacheHelper.remove(key);
     }
 
     @Override
-    public synchronized void evictAll() {
-        cacheCore.evictAll();
+    public synchronized void removeAll() {
+        diskCacheHelper.removeAll();
+        memoryCacheHelper.removeAll();
     }
 
     @Override
-    public boolean isCached(String key) {
-        return cacheCore.isCached(key);
+    public boolean contains(String key) {
+        return memoryCacheHelper.contains(key) || diskCacheHelper.contains(key);
     }
 
     @Override
     public long getDeadLine(String key) {
-        return cacheCore.getDeadLine(key);
+        long deadLine = memoryCacheHelper.getDeadLine(key);
+        if (deadLine > 0) {
+            return deadLine;
+        }
+        return diskCacheHelper.getDeadLine(key);
     }
 }

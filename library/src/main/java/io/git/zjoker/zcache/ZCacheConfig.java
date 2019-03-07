@@ -16,11 +16,11 @@ import io.git.zjoker.zcache.converter.StringByteConverter;
 public class ZCacheConfig {
     private volatile static ZCacheConfig instance;
 
-    public int memoryCacheSize;
-    public int diskCacheSize;
-    public String diskCacheRootPath;
-    public Map<Class, IByteConverter> converterMap;
-    public Context context;
+    int maxMemoryCacheSize;
+    int maxDiskCacheSize;
+    String diskCacheRootDir;
+    private Map<Class, IByteConverter> converterMap;
+    Context context;
 
     private ZCacheConfig(Context context) {
         this.context = context;
@@ -48,18 +48,27 @@ public class ZCacheConfig {
         return instance;
     }
 
-    public ZCacheConfig setMemoryCacheSize(int memoryCacheSize) {
-        this.memoryCacheSize = memoryCacheSize;
+
+    /**
+     * Max size of the memory cache.
+     * The unit is b
+     * */
+    public ZCacheConfig setMaxMemoryCacheSize(int maxMemoryCacheSize) {
+        this.maxMemoryCacheSize = maxMemoryCacheSize;
         return this;
     }
 
-    public ZCacheConfig setDiskCacheSize(int diskCacheSize) {
-        this.diskCacheSize = diskCacheSize;
+    /**
+     * Max size of the disk cache.
+     * The unit is b
+     * */
+    public ZCacheConfig setMaxDiskCacheSize(int maxDiskCacheSize) {
+        this.maxDiskCacheSize = maxDiskCacheSize;
         return this;
     }
 
-    public ZCacheConfig setDiskCacheRootDirectory(String diskCacheRootPath) {
-        this.diskCacheRootPath = diskCacheRootPath;
+    public ZCacheConfig setDiskCacheRootDir(String diskCacheRootDir) {
+        this.diskCacheRootDir = diskCacheRootDir;
         return this;
     }
 

@@ -6,15 +6,15 @@ import io.git.zjoker.zcache.converter.IByteConverter;
 
 
 
-public interface ICacheCore {
+public interface ICache {
     /**
      * Illegal Duration
      * It means cached without duration.
      */
-    long C_Illegal_Duration = 0;
+    long C_Without_Duration = 0;
 
     /**
-     * put a object to cache with duration
+     * Cache a object with duration
      *
      * @param key    The key of the obj in cache.
      * @param <T>    The object to be stored
@@ -24,7 +24,7 @@ public interface ICacheCore {
     <T> void put(String key, T obj, long duration, IByteConverter<T> converter);
 
     /**
-     * put a object to cache with duration
+     * Cache a object with deadline
      *
      * @param key    The key of the obj in cache.
      * @param <T>    The object to be stored
@@ -34,7 +34,7 @@ public interface ICacheCore {
     <T> void putWithDeadLine(String key, T obj, long deadLine, IByteConverter<T> converter);
 
     /**
-     * get a object from cache
+     * Get cache by key
      *
      * @param key The key of the obj in cache.
      * @param <T> the converter convert byte[] -> obj
@@ -51,30 +51,28 @@ public interface ICacheCore {
 
 
     /**
-     * Clear the cache by key
+     * Remove the cache by key
      *
      * @param key The key of the obj in cache.
      */
-    void evict(String key);
+    void remove(String key);
 
     /**
-     * Clear all caches
+     * Remove all caches
      */
-    void evictAll();
+    void removeAll();
 
     /**
-     * Return whether cached this key
-     *
-     * @param key
-     */
-    boolean isCached(String key);
-
-    /**
-     * Get the duration info info by key.
-     * return null if not cached this key or without duration info.
+     * Return whether contains this key
      *
      * @param key The key of the obj in cache.
-     * @return long[0] = storageTime, long[1] = duration
+     */
+    boolean contains(String key);
+
+    /**
+     * Get the deadline of this cache.
+     * return 0 if not cached this key.
+     * @param key The key of the obj in cache.
      */
     @Size(2) long getDeadLine(String key);
 }
