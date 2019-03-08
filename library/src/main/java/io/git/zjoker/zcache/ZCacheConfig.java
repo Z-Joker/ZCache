@@ -1,6 +1,5 @@
 package io.git.zjoker.zcache;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 
 import java.io.Serializable;
@@ -14,16 +13,22 @@ import io.git.zjoker.zcache.converter.SerializableByteConverter;
 import io.git.zjoker.zcache.converter.StringByteConverter;
 
 public class ZCacheConfig {
+    static final int C_Default_Max_Memory_Cache_Size = (int) (Runtime.getRuntime().maxMemory() / 8);
+    static final int C_Default_Max_Disk_Cache_Size = 10 * 1024 * 1024;
+    static final String C_Default_Disk_Cache_Dir = "zcache";
+
     private volatile static ZCacheConfig instance;
 
     int maxMemoryCacheSize;
     int maxDiskCacheSize;
     String diskCacheRootDir;
+    String diskCacheDir;
     private Map<Class, IByteConverter> converterMap;
-    Context context;
 
-    private ZCacheConfig(Context context) {
-        this.context = context;
+    private ZCacheConfig() {
+        maxMemoryCacheSize = C_Default_Max_Memory_Cache_Size;
+        maxDiskCacheSize = C_Default_Max_Disk_Cache_Size;
+        diskCacheDir = C_Default_Disk_Cache_Dir;
         converterMap = new HashMap<>();
         registerConverter(Serializable.class, new SerializableByteConverter());
         registerConverter(Bitmap.class, new BitmapByteConverter());
@@ -32,16 +37,17 @@ public class ZCacheConfig {
     }
 
     public static ZCacheConfig instance() {
-        if (instance == null)
-            throw new IllegalArgumentException("ZCacheConfig not initialized.");
+        if (instance == null) {
+            init();
+        }
         return instance;
     }
 
-    public static ZCacheConfig initWith(Context context) {
+    public static ZCacheConfig init() {
         if (instance == null) {
             synchronized (ZCacheConfig.class) {
                 if (instance == null) {
-                    instance = new ZCacheConfig(context);
+                    instance = new ZCacheConfig();
                 }
             }
         }
@@ -52,7 +58,7 @@ public class ZCacheConfig {
     /**
      * Max size of the memory cache.
      * The unit is b
-     * */
+     */
     public ZCacheConfig setMaxMemoryCacheSize(int maxMemoryCacheSize) {
         this.maxMemoryCacheSize = maxMemoryCacheSize;
         return this;
@@ -61,7 +67,7 @@ public class ZCacheConfig {
     /**
      * Max size of the disk cache.
      * The unit is b
-     * */
+     */
     public ZCacheConfig setMaxDiskCacheSize(int maxDiskCacheSize) {
         this.maxDiskCacheSize = maxDiskCacheSize;
         return this;

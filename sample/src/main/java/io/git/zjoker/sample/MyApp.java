@@ -11,7 +11,7 @@ public class MyApp extends Application {
     public void onCreate() {
         super.onCreate();
         ZCacheConfig
-                .initWith(this)
+                .init()
                 .setMaxDiskCacheSize(5 * 1024 * 1024)
                 .setMaxMemoryCacheSize(5 * 1024 * 1024)
                 .setDiskCacheRootDir(getCacheDir().getAbsolutePath());
