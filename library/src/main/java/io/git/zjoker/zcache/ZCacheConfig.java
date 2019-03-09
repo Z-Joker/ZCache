@@ -13,22 +13,22 @@ import io.git.zjoker.zcache.converter.SerializableByteConverter;
 import io.git.zjoker.zcache.converter.StringByteConverter;
 
 public class ZCacheConfig {
-    static final int C_Default_Max_Memory_Cache_Size = (int) (Runtime.getRuntime().maxMemory() / 8);
-    static final int C_Default_Max_Disk_Cache_Size = 10 * 1024 * 1024;
-    static final String C_Default_Disk_Cache_Dir = "zcache";
+    private static final int C_Default_Max_Memory_Cache_Size = (int) (Runtime.getRuntime().maxMemory() / 8);
+    private static final int C_Default_Max_Disk_Cache_Size = 10 * 1024 * 1024;
+    private static final String C_Default_Cache_Dir = "zcache";
 
     private volatile static ZCacheConfig instance;
 
     int maxMemoryCacheSize;
     int maxDiskCacheSize;
-    String diskCacheRootDir;
-    String diskCacheDir;
+    String cacheRootDir;
+    String cacheDir;
     private Map<Class, IByteConverter> converterMap;
 
     private ZCacheConfig() {
         maxMemoryCacheSize = C_Default_Max_Memory_Cache_Size;
         maxDiskCacheSize = C_Default_Max_Disk_Cache_Size;
-        diskCacheDir = C_Default_Disk_Cache_Dir;
+        cacheDir = C_Default_Cache_Dir;
         converterMap = new HashMap<>();
         registerConverter(Serializable.class, new SerializableByteConverter());
         registerConverter(Bitmap.class, new BitmapByteConverter());
@@ -38,13 +38,6 @@ public class ZCacheConfig {
 
     public static ZCacheConfig instance() {
         if (instance == null) {
-            init();
-        }
-        return instance;
-    }
-
-    public static ZCacheConfig init() {
-        if (instance == null) {
             synchronized (ZCacheConfig.class) {
                 if (instance == null) {
                     instance = new ZCacheConfig();
@@ -53,7 +46,6 @@ public class ZCacheConfig {
         }
         return instance;
     }
-
 
     /**
      * Max size of the memory cache.
@@ -73,8 +65,13 @@ public class ZCacheConfig {
         return this;
     }
 
-    public ZCacheConfig setDiskCacheRootDir(String diskCacheRootDir) {
-        this.diskCacheRootDir = diskCacheRootDir;
+    public ZCacheConfig setCacheRootDir(String cacheRootDir) {
+        this.cacheRootDir = cacheRootDir;
+        return this;
+    }
+
+    public ZCacheConfig setCacheDir(String cacheDir) {
+        this.cacheDir = cacheDir;
         return this;
     }
 
@@ -86,4 +83,6 @@ public class ZCacheConfig {
         converterMap.put(cacheClass, mapper);
         return this;
     }
+
+
 }

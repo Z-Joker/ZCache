@@ -174,4 +174,12 @@ public final class DoubleLevelCacheHelper implements ICacheHelper<ICache> {
         }
         return diskCacheHelper.getDeadLine(key);
     }
+
+    public ICacheHelper memory() {
+        return memoryCacheHelper;
+    }
+
+    public ICacheHelper disk() {
+        return diskCacheHelper;
+    }
 }

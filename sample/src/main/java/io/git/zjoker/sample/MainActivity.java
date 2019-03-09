@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
 //                try {
 //                BitmapDrawable drawable = (BitmapDrawable) ContextCompat.getDrawable(MainActivity.this,R.mipmap.ic_launcher);
 //                    jsonObject.put("lalala", "lalala"+i);
-                    ZCache.twoLevel("http").putSerializable("lalala",new Test("lalala"+i));
+                ZCache.twoLevel(MainActivity.this, "http").putSerializable("lalala", new Test("lalala" + i));
 //                } catch (JSONException e) {
 //                    e.printStackTrace();
 //                }
@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
 //                Bitmap bitmap = ZCache.twoLevel("http").getBitmap("lalala");
 //                ((ImageView)findViewById(R.id.imageView)).setImageBitmap(bitmap);
 //               String string = ZCache.twoLevel("http").getString("lalala");
-                Test test = (Test) ZCache.twoLevel("http").getSerializable("lalala");
+                Test test = (Test) ZCache.twoLevel(MainActivity.this, "http").getSerializable("lalala");
 //                Toast.makeText(MainActivity.this, string, Toast.LENGTH_SHORT).show();
             }
         });
