@@ -14,11 +14,11 @@ import io.git.zjoker.zcache.core.ICache;
 import io.git.zjoker.zcache.core.MemoryCache;
 
 
-public final class DoubleLevelCacheHelper implements ICacheHelper<ICache> {
+public final class L2CacheHelper implements ICacheHelper<ICache> {
     private ICacheHelper<MemoryCache> memoryCacheHelper;
     private ICacheHelper<DiskCache> diskCacheHelper;
 
-    public DoubleLevelCacheHelper(ICacheHelper<MemoryCache> memoryCacheHelper, ICacheHelper<DiskCache> diskCacheHelper) {
+    public L2CacheHelper(ICacheHelper<MemoryCache> memoryCacheHelper, ICacheHelper<DiskCache> diskCacheHelper) {
         this.memoryCacheHelper = memoryCacheHelper;
         this.diskCacheHelper = diskCacheHelper;
     }

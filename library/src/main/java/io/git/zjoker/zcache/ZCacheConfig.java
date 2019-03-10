@@ -65,11 +65,18 @@ public class ZCacheConfig {
         return this;
     }
 
+    /**
+     * Globle cache root path.
+     * Default: Context.getCacheDir();
+     */
     public ZCacheConfig setCacheRootDir(String cacheRootDir) {
         this.cacheRootDir = cacheRootDir;
         return this;
     }
 
+    /**
+     * Default cache dir.
+     */
     public ZCacheConfig setCacheDir(String cacheDir) {
         this.cacheDir = cacheDir;
         return this;
@@ -83,6 +90,5 @@ public class ZCacheConfig {
         converterMap.put(cacheClass, mapper);
         return this;
     }
-
 
 }
