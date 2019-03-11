@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import java.io.Serializable;
 
 import io.git.zjoker.zcache.ZCache;
+import io.git.zjoker.zcache.utils.LogUtil;
 
 public class MainActivity extends AppCompatActivity {
     private int i = 0;
@@ -25,7 +26,8 @@ public class MainActivity extends AppCompatActivity {
 //                try {
 //                BitmapDrawable drawable = (BitmapDrawable) ContextCompat.getDrawable(MainActivity.this,R.mipmap.ic_launcher);
 //                    jsonObject.put("lalala", "lalala"+i);
-                ZCache.twoLevel(MainActivity.this, "http").putSerializable("lalala", new Test("lalala" + i));
+                ZCache.twoLevel(MainActivity.this, "http").putSerializable("lalala", new Test("lalalaHttp" + i));
+                ZCache.twoLevel(MainActivity.this).putSerializable("lalala", new Test("lalala" + i));
 //                } catch (JSONException e) {
 //                    e.printStackTrace();
 //                }
@@ -44,7 +46,9 @@ public class MainActivity extends AppCompatActivity {
 //                Bitmap bitmap = ZCache.twoLevel("http").getBitmap("lalala");
 //                ((ImageView)findViewById(R.id.imageView)).setImageBitmap(bitmap);
 //               String string = ZCache.twoLevel("http").getString("lalala");
-                Test test = (Test) ZCache.twoLevel(MainActivity.this, "http").getSerializable("lalala");
+                Test test = (Test) ZCache.twoLevel(MainActivity.this).getSerializable("lalala");
+                Test test2 = (Test) ZCache.twoLevel(MainActivity.this, "http").getSerializable("lalala");
+                LogUtil.d(String.valueOf(test) + "----" + String.valueOf(test2));
 //                Toast.makeText(MainActivity.this, string, Toast.LENGTH_SHORT).show();
             }
         });

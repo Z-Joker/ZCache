@@ -26,7 +26,8 @@ public class MemoryCache implements ICache {
 
     @Override
     public <T> void put(String key, T obj, long duration, IByteConverter<T> converter) {
-        putWithDeadLine(key, obj, System.currentTimeMillis() + duration, converter);
+        long deadLine = CacheUtil.validateDuration(duration) ? System.currentTimeMillis() + duration : -1;
+        putWithDeadLine(key, obj, deadLine, converter);
     }
 
     @Override

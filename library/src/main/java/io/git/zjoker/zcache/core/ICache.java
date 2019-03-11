@@ -11,7 +11,7 @@ public interface ICache {
      * Illegal Duration
      * It means cached without duration.
      */
-    long C_Without_Duration = 0;
+    long C_Without_Duration = -1;
 
     /**
      * Cache a object with duration

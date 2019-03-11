@@ -30,7 +30,7 @@ public class CacheUtil {
      * Check the data is expired
      */
     public static boolean isExpired(long deadline) {
-        return System.currentTimeMillis() > deadline;
+        return deadline >= 0 && System.currentTimeMillis() > deadline;
     }
 
     public static byte[] buildByteWithDeadLine(long deadLine, byte[] originalData) {
@@ -129,5 +129,9 @@ public class CacheUtil {
         if (!matcher.matches()) {
             throw new IllegalArgumentException("keys must match regex [a-z0-9_-]{1,64}: \"" + key + "\"");
         }
+    }
+
+    public static boolean validateDuration(long duration) {
+        return duration >= 0;
     }
 }
