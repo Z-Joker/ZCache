@@ -1,5 +1,5 @@
 # ZCache
-ZCache是一个为Android制定的 高度可定制的 开源缓存框架。
+ZCache是一个为**Android制定**的 **高度可扩展**的 开源缓存框架。
 
 ## 1. 特点
 - 1 ：存储对象可定制，可以定制存储任何能转换成byte数组东西如String, Bitmap和序列化Java对象等。
