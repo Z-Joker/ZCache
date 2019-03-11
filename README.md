@@ -61,21 +61,21 @@ ZCache是一个为Android制定的 高度可定制的 开源缓存框架。
 - 2：使用自定义转换器，2种方式
     
 ```
-//第1种：注册为全局的转换器
+  //第1种：注册为全局的转换器
   ZCacheConfig
             .instance()
             .registerConverter(String.class, new StringByteConverter());
     
   ZCache.memory(this).put("key","value")//会自动从全局转换器中寻找对应类型的转换器
 
-//第2种：局部使用
+  //第2种：局部使用
   ZCache.memory(this).put("key","value",new StringByteConverter());
 ```
 
 
 ### 自定义存储方式
 ```
-//实现ICache接口，选择自己的存储方式。
+  //实现ICache接口，选择自己的存储方式。
   public interface ICache {
    
     <T> void put(String key, T obj, long duration, IByteConverter<T> converter);//缓存
