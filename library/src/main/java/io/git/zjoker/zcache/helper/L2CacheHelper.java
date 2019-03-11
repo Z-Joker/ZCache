@@ -52,7 +52,7 @@ public final class L2CacheHelper implements ICacheHelper<ICache> {
             obj = diskCacheHelper.get(key, converter);
             if (obj != null) {
                 long deadLine = diskCacheHelper.getDeadLine(key);
-                if (deadLine > 0) {
+                if (deadLine >= 0) {
                     memoryCacheHelper.putWithDeadLine(key, obj, deadLine, converter);
                 } else {
                     memoryCacheHelper.put(key, obj, C_Without_Duration, converter);

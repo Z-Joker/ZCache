@@ -1,7 +1,5 @@
 package io.git.zjoker.zcache.core;
 
-import android.support.annotation.Size;
-
 import io.git.zjoker.zcache.converter.IByteConverter;
 
 
@@ -74,5 +72,5 @@ public interface ICache {
      * return 0 if not cached this key.
      * @param key The key of the obj in cache.
      */
-    @Size(2) long getDeadLine(String key);
+    long getDeadLine(String key);
 }
