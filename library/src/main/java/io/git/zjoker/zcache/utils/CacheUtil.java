@@ -12,18 +12,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CacheUtil {
-    private static final char mSeparator = '-';
+    private static final char mSeparator = '~';
     private static final Pattern LEGAL_KEY_PATTERN = Pattern.compile("[a-z0-9_-]{1,64}");
 
     /**
      * Check the data is expired
      */
     public static boolean isExpired(byte[] data) {
-        String saveTimeStr = getDeadLine(data);
-        while (saveTimeStr.startsWith("0")) {
-            saveTimeStr = saveTimeStr.substring(1);
+        String deadLine = getDeadLine(data);
+        while (deadLine.startsWith("0")) {
+            deadLine = deadLine.substring(1);
         }
-        return isExpired(parseLong(saveTimeStr));
+        return isExpired(parseLong(deadLine));
     }
 
     /**

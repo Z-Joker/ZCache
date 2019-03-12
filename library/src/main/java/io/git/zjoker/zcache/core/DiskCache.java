@@ -27,7 +27,7 @@ public class DiskCache implements ICache {
 
     @Override
     public <T> void put(String key, T obj, long duration, IByteConverter<T> converter) {
-        long deadLine = CacheUtil.validateDuration(duration) ? System.currentTimeMillis() + duration : -1;
+        long deadLine = CacheUtil.validateDuration(duration) ? System.currentTimeMillis() + duration : C_Without_Duration;
         putWithDeadLine(key, obj, deadLine, converter);
     }
 

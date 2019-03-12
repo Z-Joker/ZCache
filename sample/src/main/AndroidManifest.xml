@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="io.git.zjoker.sample">
 
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <application
         android:name=".MyApp"
         android:allowBackup="false"
@@ -17,6 +18,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".StringCacheActivity" />
+        <activity android:name=".BitmapCacheActivity" />
+        <activity android:name=".SerializableCacheActivity" />
+        <activity android:name=".CacheLevelActivity" />
+        <activity android:name=".MultiplyCachePathActivity" />
+        <activity android:name=".CustomConverterActivity" />
     </application>
 
 </manifest>
