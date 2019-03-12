@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">ZCache_Demo</string>
     <string name="mutil_cache_info">默认根路径：/data/data/package/cache\n缓存路径1: 默认(../zcache)\n缓存路径2：自定义子路径(../http)\n缓存路径3：自定义绝对路径(/storage/emulated/0/Android/data/io.git.zjoker.zcache/cache/test)</string>
 
     <string-array name="cache_levels">
