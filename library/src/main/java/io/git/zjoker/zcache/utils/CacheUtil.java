@@ -33,6 +33,9 @@ public class CacheUtil {
         return deadline >= 0 && System.currentTimeMillis() > deadline;
     }
 
+    /**
+     * Build byte[] include deadline.
+     */
     public static byte[] buildByteWithDeadLine(long deadLine, byte[] originalData) {
         byte[] deadLineBytes = createDeadLineStr(deadLine).getBytes();
         byte[] dataWithDeadLine = new byte[deadLineBytes.length + originalData.length];

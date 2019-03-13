@@ -10,8 +10,7 @@ import java.io.Serializable;
 import io.git.zjoker.zcache.converter.IByteConverter;
 import io.git.zjoker.zcache.core.ICache;
 /**
- * A adapter of
- *
+ * A cache helper, hold ICache and provide method for some types of cache often used.
  * */
 
 public interface ICacheHelper<V extends ICache> extends ICache {

@@ -5,11 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import java.io.Serializable;
-
 public class MainActivity extends AppCompatActivity {
-    private int i = 0;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,21 +32,6 @@ public class MainActivity extends AppCompatActivity {
             case R.id.btn_custom_converter:
                 startActivity(new Intent(this, CustomConverterActivity.class));
                 break;
-        }
-    }
-
-    public static class Test implements Serializable {
-        String name;
-
-        public Test(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public String toString() {
-            return "Test{" +
-                    "name='" + name + '\'' +
-                    '}';
         }
     }
 }

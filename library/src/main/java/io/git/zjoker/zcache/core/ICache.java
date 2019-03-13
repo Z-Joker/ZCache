@@ -3,7 +3,9 @@ package io.git.zjoker.zcache.core;
 import io.git.zjoker.zcache.converter.IByteConverter;
 
 
-
+/**
+ * Cache core interface. Implement it to custom yourself cache.
+ */
 public interface ICache {
     /**
      * Illegal Duration

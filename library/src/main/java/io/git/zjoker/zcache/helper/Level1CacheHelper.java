@@ -9,18 +9,17 @@ import java.io.Serializable;
 
 import io.git.zjoker.zcache.ZCacheConfig;
 import io.git.zjoker.zcache.converter.IByteConverter;
-import io.git.zjoker.zcache.core.DiskCache;
 import io.git.zjoker.zcache.core.ICache;
-import io.git.zjoker.zcache.core.MemoryCache;
+import io.git.zjoker.zcache.utils.Optional;
 
+/**
+ * 1 Level Cache only hold Memory cache or Disk cache.
+ */
+public class Level1CacheHelper<V extends ICache> implements ICacheHelper<V> {
+    private V cache;
 
-public final class L2CacheHelper implements ICacheHelper<ICache> {
-    private ICacheHelper<MemoryCache> memoryCacheHelper;
-    private ICacheHelper<DiskCache> diskCacheHelper;
-
-    public L2CacheHelper(ICacheHelper<MemoryCache> memoryCacheHelper, ICacheHelper<DiskCache> diskCacheHelper) {
-        this.memoryCacheHelper = memoryCacheHelper;
-        this.diskCacheHelper = diskCacheHelper;
+    public Level1CacheHelper(V ICache) {
+        this.cache = ICache;
     }
 
     @Override
@@ -29,37 +28,27 @@ public final class L2CacheHelper implements ICacheHelper<ICache> {
     }
 
     @Override
-    public <T> void put(String key, T obj, IByteConverter<T> converter) {
-        put(key, obj, C_Without_Duration, converter);
+    public <T> void put(String key, T obj, IByteConverter<T> mapper) {
+        put(key, obj, C_Without_Duration, mapper);
     }
 
     @Override
     public <T> void put(String key, T obj, long duration, IByteConverter<T> converter) {
-        memoryCacheHelper.put(key, obj, duration, converter);
-        diskCacheHelper.put(key, obj, duration, converter);
+        Optional.checkNotNull(obj, "obj is null !!!");
+        Optional.checkNotNull(converter, "mapper is null !!!");
+        cache.put(key, obj, duration, converter);
     }
 
     @Override
     public <T> void putWithDeadLine(String key, T obj, long deadLine, IByteConverter<T> converter) {
-        memoryCacheHelper.putWithDeadLine(key, obj, deadLine, converter);
-        diskCacheHelper.putWithDeadLine(key, obj, deadLine, converter);
+        Optional.checkNotNull(obj, "obj is null !!!");
+        Optional.checkNotNull(converter, "mapper is null !!!");
+        cache.putWithDeadLine(key, obj, deadLine, converter);
     }
 
     @Override
     public <T> T get(String key, IByteConverter<T> converter) {
-        T obj = memoryCacheHelper.get(key, converter);
-        if (obj == null) {
-            obj = diskCacheHelper.get(key, converter);
-            if (obj != null) {
-                long deadLine = diskCacheHelper.getDeadLine(key);
-                if (deadLine >= 0) {
-                    memoryCacheHelper.putWithDeadLine(key, obj, deadLine, converter);
-                } else {
-                    memoryCacheHelper.put(key, obj, C_Without_Duration, converter);
-                }
-            }
-        }
-        return obj;
+        return cache.get(key, converter);
     }
 
     @Override
@@ -86,7 +75,6 @@ public final class L2CacheHelper implements ICacheHelper<ICache> {
     public void putBitmap(String key, Bitmap bitmap, long duration) {
         put(key, bitmap, duration, ZCacheConfig.instance().getConverter(Bitmap.class));
     }
-
 
     @Override
     public Bitmap getBitmap(String key) {
@@ -125,7 +113,6 @@ public final class L2CacheHelper implements ICacheHelper<ICache> {
         return new JSONObject(getString(key));
     }
 
-
     @Override
     public void putString(String key, String obj) {
         putString(key, obj, C_Without_Duration);
@@ -143,43 +130,26 @@ public final class L2CacheHelper implements ICacheHelper<ICache> {
 
     @Override
     public boolean isExpired(String key) {
-        if (memoryCacheHelper.contains(key)) {
-            return memoryCacheHelper.isExpired(key);
-        }
-        return diskCacheHelper.isExpired(key);
+        return cache.isExpired(key);
     }
 
     @Override
     public synchronized void remove(String key) {
-        diskCacheHelper.remove(key);
-        memoryCacheHelper.remove(key);
+        cache.remove(key);
     }
 
     @Override
     public synchronized void removeAll() {
-        diskCacheHelper.removeAll();
-        memoryCacheHelper.removeAll();
+        cache.removeAll();
     }
 
     @Override
     public boolean contains(String key) {
-        return memoryCacheHelper.contains(key) || diskCacheHelper.contains(key);
+        return cache.contains(key);
     }
 
     @Override
     public long getDeadLine(String key) {
-        long deadLine = memoryCacheHelper.getDeadLine(key);
-        if (deadLine > 0) {
-            return deadLine;
-        }
-        return diskCacheHelper.getDeadLine(key);
-    }
-
-    public ICacheHelper memory() {
-        return memoryCacheHelper;
-    }
-
-    public ICacheHelper disk() {
-        return diskCacheHelper;
+        return cache.getDeadLine(key);
     }
 }

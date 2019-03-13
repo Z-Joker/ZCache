@@ -9,13 +9,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import io.git.zjoker.zcache.core.DiskCache;
 import io.git.zjoker.zcache.core.MemoryCache;
 import io.git.zjoker.zcache.helper.ICacheHelper;
-import io.git.zjoker.zcache.helper.L2CacheHelper;
-import io.git.zjoker.zcache.helper.SingleLevelCacheHelper;
+import io.git.zjoker.zcache.helper.Level1CacheHelper;
+import io.git.zjoker.zcache.helper.Level2CacheHelper;
 import io.git.zjoker.zcache.utils.CacheUtil;
 
 public class ZCache {
-    private static Map<String, SingleLevelCacheHelper<MemoryCache>> memoryCacheHelperMap = new ConcurrentHashMap<>();
-    private static Map<String, SingleLevelCacheHelper<DiskCache>> diskCacheHelperMap = new ConcurrentHashMap<>();
+    private static Map<String, Level1CacheHelper<MemoryCache>> memoryCacheHelperMap = new ConcurrentHashMap<>();
+    private static Map<String, Level1CacheHelper<DiskCache>> diskCacheHelperMap = new ConcurrentHashMap<>();
 
     /**
      * Get Memory Cache Helper instance on default cacheDir.
@@ -57,11 +57,11 @@ public class ZCache {
      * Return different Helper instance by different cacheDir.
      */
     private static ICacheHelper<MemoryCache> memory(String absoluteCacheDir, int maxSize) {
-        SingleLevelCacheHelper<MemoryCache> cacheHelper = memoryCacheHelperMap.get(absoluteCacheDir);
+        Level1CacheHelper<MemoryCache> cacheHelper = memoryCacheHelperMap.get(absoluteCacheDir);
         if (cacheHelper == null) {
             int fixMaxSize = fixCacheSize(maxSize, ZCacheConfig.instance().maxMemoryCacheSize);
             cacheHelper
-                    = new SingleLevelCacheHelper<>(new MemoryCache(fixMaxSize));
+                    = new Level1CacheHelper<>(new MemoryCache(fixMaxSize));
             memoryCacheHelperMap.put(absoluteCacheDir, cacheHelper);
         }
         return cacheHelper;
@@ -119,12 +119,12 @@ public class ZCache {
     public static ICacheHelper<DiskCache> disk(Context context, File cacheDirFie, int maxSize) {
         String absoluteCacheDir = cacheDirFie.getAbsolutePath();
 
-        SingleLevelCacheHelper<DiskCache> cacheHelper = diskCacheHelperMap.get(absoluteCacheDir);
+        Level1CacheHelper<DiskCache> cacheHelper = diskCacheHelperMap.get(absoluteCacheDir);
         if (cacheHelper == null) {
             final int appVersion = CacheUtil.getVersionCode(context);
             int fixMaxSize = fixCacheSize(maxSize, ZCacheConfig.instance().maxDiskCacheSize);
             cacheHelper
-                    = new SingleLevelCacheHelper<>(new DiskCache(appVersion, absoluteCacheDir, fixMaxSize));
+                    = new Level1CacheHelper<>(new DiskCache(appVersion, absoluteCacheDir, fixMaxSize));
             diskCacheHelperMap.put(absoluteCacheDir, cacheHelper);
         }
         return cacheHelper;
@@ -136,7 +136,7 @@ public class ZCache {
      * Use Disk if no cache or expired in memory cache.
      * Return different helper instance by different cacheDir.
      */
-    public static L2CacheHelper twoLevel(Context context, File absoluteCacheDir, int maxMemoryCacheSize, int maxDiskCacheSize) {
+    public static Level2CacheHelper twoLevel(Context context, File absoluteCacheDir, int maxMemoryCacheSize, int maxDiskCacheSize) {
         return twoLevel(context, absoluteCacheDir, new CacheSizeParam(maxMemoryCacheSize, maxDiskCacheSize));
     }
 
@@ -146,10 +146,10 @@ public class ZCache {
      * Use Disk if no cache or expired in memory cache.
      * Return different helper instance by different cacheDir.
      */
-    public static L2CacheHelper twoLevel(Context context, File absoluteCacheDir, CacheSizeParam cacheSizeParam) {
+    public static Level2CacheHelper twoLevel(Context context, File absoluteCacheDir, CacheSizeParam cacheSizeParam) {
         CacheSizeParam sizeParams = fixCacheSizeParams(cacheSizeParam);
         return
-                new L2CacheHelper(
+                new Level2CacheHelper(
                         memory(absoluteCacheDir.getAbsolutePath(), sizeParams.maxMemoryCacheSize)
                         , disk(context, absoluteCacheDir, sizeParams.maxDiskCacheSize));
     }
@@ -160,7 +160,7 @@ public class ZCache {
      * Use Disk if no cache or expired in memory cache.
      * Return different helper instance by different cacheDir.
      */
-    public static L2CacheHelper twoLevel(Context context, String cacheDir, int maxMemoryCacheSize, int maxDiskCacheSize) {
+    public static Level2CacheHelper twoLevel(Context context, String cacheDir, int maxMemoryCacheSize, int maxDiskCacheSize) {
         return twoLevel(context, cacheDir, new CacheSizeParam(maxMemoryCacheSize, maxDiskCacheSize));
     }
 
@@ -170,10 +170,10 @@ public class ZCache {
      * Use Disk if no cache or expired in memory cache.
      * Return different helper instance by different cacheDir.
      */
-    public static L2CacheHelper twoLevel(Context context, String cacheDir, CacheSizeParam cacheSizeParam) {
+    public static Level2CacheHelper twoLevel(Context context, String cacheDir, CacheSizeParam cacheSizeParam) {
         CacheSizeParam sizeParams = fixCacheSizeParams(cacheSizeParam);
         return
-                new L2CacheHelper(
+                new Level2CacheHelper(
                         memory(context, cacheDir, sizeParams.maxMemoryCacheSize)
                         , disk(context, cacheDir, sizeParams.maxDiskCacheSize));
     }
@@ -184,9 +184,9 @@ public class ZCache {
      * Use Disk if no cache or expired in memory cache.
      * Return different helper instance by different cacheDir.
      */
-    public static L2CacheHelper twoLevel(Context context, String cacheDir) {
+    public static Level2CacheHelper twoLevel(Context context, String cacheDir) {
         return
-                new L2CacheHelper(
+                new Level2CacheHelper(
                         memory(context, cacheDir)
                         , disk(context, cacheDir));
     }
@@ -197,8 +197,8 @@ public class ZCache {
      * Use Disk if no cache or expired in memory cache.
      * Return different helper instance on default cacheDir.
      */
-    public static L2CacheHelper twoLevel(Context context) {
-        return new L2CacheHelper(memory(context), disk(context));
+    public static Level2CacheHelper twoLevel(Context context) {
+        return new Level2CacheHelper(memory(context), disk(context));
     }
 
 
@@ -208,7 +208,7 @@ public class ZCache {
      * Use Disk if no cache or expired in memory cache.
      * Return different helper instance by different cacheDir.
      */
-    public static L2CacheHelper twoLevel(Context context, int maxMemoryCacheSize, int maxDiskCacheSize) {
+    public static Level2CacheHelper twoLevel(Context context, int maxMemoryCacheSize, int maxDiskCacheSize) {
         return twoLevel(context, new CacheSizeParam(maxMemoryCacheSize, maxDiskCacheSize));
     }
 
@@ -218,9 +218,9 @@ public class ZCache {
      * Use Disk if no cache or expired in memory cache.
      * Return different helper instance by different cacheDir.
      */
-    public static L2CacheHelper twoLevel(Context context, CacheSizeParam cacheSizeParam) {
+    public static Level2CacheHelper twoLevel(Context context, CacheSizeParam cacheSizeParam) {
         CacheSizeParam sizeParams = fixCacheSizeParams(cacheSizeParam);
-        return new L2CacheHelper(memory(context, sizeParams.maxMemoryCacheSize), disk(context, sizeParams.maxDiskCacheSize));
+        return new Level2CacheHelper(memory(context, sizeParams.maxMemoryCacheSize), disk(context, sizeParams.maxDiskCacheSize));
     }
 
     private static String getDefaultRootDir(Context context) {
