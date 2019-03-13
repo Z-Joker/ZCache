@@ -1,5 +1,7 @@
 package io.git.zjoker.zcache.core;
 
+import android.util.Log;
+
 import java.io.IOException;
 
 import io.git.zjoker.zcache.converter.IByteConverter;
@@ -46,7 +48,7 @@ public class DiskCache implements ICache {
             return null;
         }
         if (CacheUtil.isExpired(bytes)) {
-            LogUtil.d(String.format("Cache in disk of the key named %s expired", key));
+            Log.d("ZCache", String.format("Cache in disk of the key named %s expired", key));
             remove(key);
             return null;
         }

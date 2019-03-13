@@ -1,5 +1,6 @@
 package io.git.zjoker.zcache.core;
 
+import android.util.Log;
 import android.util.LruCache;
 
 import java.io.Serializable;
@@ -45,7 +46,7 @@ public class MemoryCache implements ICache {
             return null;
         }
         if (CacheUtil.isExpired(cacheEntry.deadLine)) {
-            LogUtil.d(String.format("Cache in memory of the key named %s expired", key));
+            Log.d("ZCache", String.format("Cache in memory of the key named %s expired", key));
             remove(key);
             return null;
         }
