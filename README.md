@@ -13,6 +13,22 @@ ZCache是一个**为Android制定**的 **高度可扩展**的 开源缓存框架
 一切能转换成byte数组的东西：String、序列化Java对象、Bitmap、byte数组和Intent等。  
 已提供String, 、序列化Java对象、Bitmap和JSONObject的存取实现。
 
+## 3.添加依赖
+```
+//Add it in your root build.gradle at the end of repositories:
+allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+
+//Add the dependency
+dependencies {
+	        implementation 'com.github.Z-Joker:ZCache:v1.0.0'
+	}
+```
+
 ## 3. 基本使用
 
 - 1：获取ZCache
