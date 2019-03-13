@@ -29,7 +29,7 @@ dependencies {
 	}
 ```
 
-## 3. 基本使用
+## 4. 基本使用
 
 - 1：获取ZCache
 ```
@@ -46,7 +46,7 @@ dependencies {
 ```
     ZCache.memory(this).getString("key","value");
 ```
-## 3. 高级使用
+## 5. 高级使用
 ### 全局的配置
 
 ```
@@ -114,11 +114,11 @@ dependencies {
 
 更多示例请见Demo。
 
-### 感谢
+## 6. Thanks
 [ASimpleCache](https://github.com/yangfuhai/ASimpleCache)  
 [TCache](https://github.com/borneywpf/TCache)
 
-### License
+## 7. License
 ```
  Copyright 2019 Mr_Joker (ZSimple@gmail.com)
 
