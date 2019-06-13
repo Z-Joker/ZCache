@@ -9,6 +9,7 @@ import java.util.Map;
 import io.git.zjoker.zcache.converter.BitmapByteConverter;
 import io.git.zjoker.zcache.converter.BytesConverter;
 import io.git.zjoker.zcache.converter.IByteConverter;
+import io.git.zjoker.zcache.converter.ObjByteConverter;
 import io.git.zjoker.zcache.converter.SerializableByteConverter;
 import io.git.zjoker.zcache.converter.StringByteConverter;
 
@@ -23,7 +24,8 @@ public class ZCacheConfig {
     int maxDiskCacheSize;
     String cacheRootDir;
     String cacheDir;
-    private Map<Class, IByteConverter> converterMap;
+    private Map<Class<?>, IByteConverter<?>> converterMap;
+    private Map<Class<?>, IByteConverter<?>> objConverterMap;
 
     private ZCacheConfig() {
         maxMemoryCacheSize = C_Default_Max_Memory_Cache_Size;
@@ -34,6 +36,7 @@ public class ZCacheConfig {
         registerConverter(Bitmap.class, new BitmapByteConverter());
         registerConverter(byte[].class, new BytesConverter());
         registerConverter(String.class, new StringByteConverter());
+        objConverterMap = new HashMap<>();
     }
 
     public static ZCacheConfig instance() {
@@ -83,7 +86,16 @@ public class ZCacheConfig {
     }
 
     public <T> IByteConverter<T> getConverter(Class<T> cacheClass) {
-        return converterMap.get(cacheClass);
+        return (IByteConverter<T>) converterMap.get(cacheClass);
+    }
+
+    public <T> IByteConverter<T> getObjConverter(Class<T> cacheClass) {
+        IByteConverter<?> converter = objConverterMap.get(cacheClass);
+        if (converter == null) {
+            converter = new ObjByteConverter(cacheClass);
+            objConverterMap.put(cacheClass, converter);
+        }
+        return (IByteConverter<T>) converter;
     }
 
     public <T> ZCacheConfig registerConverter(Class<T> cacheClass, IByteConverter<T> mapper) {

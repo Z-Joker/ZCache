@@ -144,6 +144,22 @@ public final class Level2CacheHelper implements ICacheHelper<ICache> {
         return get(key, ZCacheConfig.instance().getConverter(String.class));
     }
 
+
+    @Override
+    public void putObj(String key, Object obj) {
+        putObj(key, obj, C_Without_Duration);
+    }
+
+    @Override
+    public void putObj(String key, Object obj, long duration) {
+        put(key, obj, duration, ZCacheConfig.instance().getConverter(Object.class));
+    }
+
+    @Override
+    public <T> T getObj(String key, Class<T> tClass) {
+        return (T) get(key, ZCacheConfig.instance().getConverter(Object.class));
+    }
+
     @Override
     public boolean isExpired(String key) {
         if (memoryCacheHelper.contains(key)) {

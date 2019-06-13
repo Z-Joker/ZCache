@@ -175,4 +175,31 @@ public interface ICacheHelper<V extends ICache> extends ICache {
      * @return Cached String. return null if no cache or expired.
      */
     String getString(String key);
+
+    /*****************************Object****************************/
+
+    /**
+     * Cache a Object with duration.
+     *
+     * @param key      The key of the obj in cache.
+     * @param obj      The String will be cached.
+     * @param duration The duration of this cache.
+     */
+    void putObj(String key, Object obj, long duration);
+
+    /**
+     * Cache a Object with duration.
+     *
+     * @param key The key of the obj in cache.
+     * @param obj The String will be cached.
+     */
+    <T extends Object> void putObj(String key, T obj);
+
+    /**
+     * Get a Object from cache.
+     *
+     * @param key The key of the obj in cache.
+     * @return Cached Object. return null if no cache or expired.
+     */
+    <T> T getObj(String key, Class<T> tClass);
 }

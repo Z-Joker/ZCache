@@ -23,6 +23,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.btn_ser_cache:
                 startActivity(new Intent(this, SerializableCacheActivity.class));
                 break;
+            case R.id.btn_obj_cache:
+                startActivity(new Intent(this, ObjCacheActivity.class));
+                break;
             case R.id.btn_cache_level:
                 startActivity(new Intent(this, CacheLevelActivity.class));
                 break;

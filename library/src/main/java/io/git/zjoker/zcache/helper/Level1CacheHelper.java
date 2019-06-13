@@ -129,6 +129,23 @@ public class Level1CacheHelper<V extends ICache> implements ICacheHelper<V> {
     }
 
     @Override
+    public <T> void putObj(String key, T obj) {
+        putObj(key, obj, C_Without_Duration);
+    }
+
+
+    @Override
+    public void putObj(String key, Object obj, long duration) {
+        put(key, obj, duration, ZCacheConfig.instance().getObjConverter((Class) obj.getClass()));
+    }
+
+
+    @Override
+    public <T> T getObj(String key, Class<T> tClass) {
+        return get(key, ZCacheConfig.instance().getObjConverter(tClass));
+    }
+
+    @Override
     public boolean isExpired(String key) {
         return cache.isExpired(key);
     }

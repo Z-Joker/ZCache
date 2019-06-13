@@ -32,6 +32,17 @@
         tools:layout_editor_absoluteY="467dp" />
 
     <Button
+        android:id="@+id/btn_obj_cache"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:onClick="onClick"
+        android:text="缓存序列化Object对象"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="467dp" />
+
+    <Button
         android:id="@+id/btn_bitmap_cache"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
