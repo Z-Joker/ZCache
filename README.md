@@ -115,7 +115,7 @@ dependencies {
 更多示例请见Demo。
 
 ## 6. Change Log
-### v(2.0.0)
+### v(2.0.1)
 - 基于ProtoStuff实现对普通Java序列化/反序列化，无需实现Serializable接口。
 
 ## 7. Thanks
