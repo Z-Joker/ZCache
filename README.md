@@ -2,7 +2,7 @@
 ZCache是一个**为Android制定**的 **高度可扩展**的 开源缓存框架。
 
 ## 1. 特点
-- 1 ：存储对象可定制，可以定制存储任何能转换成byte数组东西如String, Bitmap和POJO对象等。
+- 1 ：存储对象可定制，可以定制存储任何能转换成byte数组东西如String, Bitmap和普通Java对象(无需实现Serializable接口)等。
 - 2 ：存储方式可定制，可以选择不同的方式进行定制，如内存，文件等。
 - 3 ：基于**LRU算法**的缓存，适用于移动设备这种配置有限的设备，自动删除使用频率小的缓存。
 - 4 ：可以配置全局的缓存路径，大小，也可以局部单独配置相对或绝对路径。
@@ -10,8 +10,8 @@ ZCache是一个**为Android制定**的 **高度可扩展**的 开源缓存框架
 - 6 ：支持多存储路径多缓存实例，不同存储路径使用不同缓存实例互不干扰。
 
 ## 2. 可缓存对象
-一切能转换成byte数组的东西：String、POJO对象、Bitmap、byte数组和Intent等。  
-已提供String, 、POJO对象、Bitmap和JSONObject的存取实现。
+一切能转换成byte数组的东西：String、普通Java对象、Bitmap、byte数组和Intent等。  
+已提供String, 、普通Java对象、Bitmap和JSONObject的存取实现。
 
 ## 3.添加依赖
 ```
@@ -116,7 +116,7 @@ dependencies {
 
 ## 6. Change Log
 ### v(2.0.0)
-- 基于ProtoStuff实现对POJO对象序列化/反序列化，替代Serializable。
+- 基于ProtoStuff实现对普通Java序列化/反序列化，无需实现Serializable接口。
 
 ## 7. Thanks
 [ASimpleCache](https://github.com/yangfuhai/ASimpleCache)  
