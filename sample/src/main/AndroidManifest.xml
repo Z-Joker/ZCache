@@ -24,7 +24,7 @@
         <activity android:name=".CacheLevelActivity" />
         <activity android:name=".MultiplyCachePathActivity" />
         <activity android:name=".CustomConverterActivity" />
-        <activity android:name=".POJOCacheActivity" />
+        <activity android:name=".ObjectCacheActivity" />
     </application>
 
 </manifest>

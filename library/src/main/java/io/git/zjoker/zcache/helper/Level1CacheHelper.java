@@ -129,7 +129,7 @@ public class Level1CacheHelper<V extends ICache> implements ICacheHelper<V> {
     }
 
     @Override
-    public <T> void putObj(String key, T obj) {
+    public void putObj(String key, Object obj) {
         putObj(key, obj, C_Without_Duration);
     }
 

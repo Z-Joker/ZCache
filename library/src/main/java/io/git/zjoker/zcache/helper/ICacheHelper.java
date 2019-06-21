@@ -193,7 +193,7 @@ public interface ICacheHelper<V extends ICache> extends ICache {
      * @param key The key of the obj in cache.
      * @param obj The Object will be cached.
      */
-    <T extends Object> void putObj(String key, T obj);
+    void putObj(String key, Object obj);
 
     /**
      * Get a Object from cache.

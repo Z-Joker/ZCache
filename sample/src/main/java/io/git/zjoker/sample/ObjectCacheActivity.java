@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import io.git.zjoker.zcache.ZCache;
 
-public class POJOCacheActivity extends AppCompatActivity {
+public class ObjectCacheActivity extends AppCompatActivity {
     private EditText userIdED;
     private EditText userNameED;
     private EditText userAgeED;
