@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import io.git.zjoker.zcache.ZCache;
 
-public class ObjCacheActivity extends AppCompatActivity {
+public class POJOCacheActivity extends AppCompatActivity {
     private EditText userIdED;
     private EditText userNameED;
     private EditText userAgeED;
@@ -56,16 +56,16 @@ public class ObjCacheActivity extends AppCompatActivity {
 
         String durationStr = durationED.getText().toString();
         int duration = !TextUtils.isEmpty(durationStr) ? Integer.parseInt(durationStr) : -1;
-        ZCache.memory(this).putObj(Utils.MD5("Test_Obj"), new User(userId, userName, age), duration);
+        ZCache.memory(this).putObj(Utils.MD5("Test_POJO"), new User(userId, userName, age), duration);
     }
 
     private void get() {
-        User user = ZCache.memory(this).getObj(Utils.MD5("Test_Obj"), User.class);
+        User user = ZCache.memory(this).getObj(Utils.MD5("Test_POJO"), User.class);
         savedTV.setText(String.valueOf(user));
     }
 
     private void clear() {
-        ZCache.memory(this).remove(Utils.MD5("Test_Obj"));
+        ZCache.memory(this).remove(Utils.MD5("Test_POJO"));
     }
 
     public static class User {
