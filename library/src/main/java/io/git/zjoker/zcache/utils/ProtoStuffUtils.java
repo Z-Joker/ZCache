@@ -34,6 +34,9 @@ public class ProtoStuffUtils {
 
     private static Map<Class<?>, Schema<?>> schemaCache = new ConcurrentHashMap<>();
 
+    /**
+     * Serialize a obj use ProtoStuff
+     */
     public static <T> byte[] serialize(T obj) {
         byte[] bytes = new byte[0];
         LinkedBuffer buffer = LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE);
@@ -54,6 +57,9 @@ public class ProtoStuffUtils {
         return bytes;
     }
 
+    /**
+     * Deserialize bytes to obj use ProtoStuff
+     */
     public static <T> T deserialize(byte[] bytes, Class<T> clazz) {
         try {
             if (!isClassNeedWrapper(clazz)) {

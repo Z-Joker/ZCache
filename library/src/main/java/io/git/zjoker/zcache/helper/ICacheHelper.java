@@ -182,7 +182,7 @@ public interface ICacheHelper<V extends ICache> extends ICache {
      * Cache a Object with duration.
      *
      * @param key      The key of the obj in cache.
-     * @param obj      The String will be cached.
+     * @param obj      The Object will be cached.
      * @param duration The duration of this cache.
      */
     void putObj(String key, Object obj, long duration);
@@ -191,7 +191,7 @@ public interface ICacheHelper<V extends ICache> extends ICache {
      * Cache a Object with duration.
      *
      * @param key The key of the obj in cache.
-     * @param obj The String will be cached.
+     * @param obj The Object will be cached.
      */
     <T extends Object> void putObj(String key, T obj);
 
