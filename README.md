@@ -25,7 +25,7 @@ allprojects {
 
 //Add the dependency
 dependencies {
-	        implementation 'com.github.Z-Joker:ZCache:v2.0.0'
+	        implementation 'com.github.Z-Joker:ZCache:v2.0.1'
 	}
 ```
 
